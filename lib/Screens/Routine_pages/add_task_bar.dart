@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -13,19 +14,49 @@ class AddTaskPage extends StatefulWidget {
 }
 
 class _AddTaskPageState extends State<AddTaskPage> {
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _noteController = TextEditingController();
-  final TextEditingController _startTimeController = TextEditingController();
-  final TextEditingController _endTimeController = TextEditingController();
-  final TextEditingController _colorController = TextEditingController();
+
+
+  final  _titleController = TextEditingController();
+  final  _noteController = TextEditingController();
+  final  _startTimeController = TextEditingController();
+  final  _endTimeController = TextEditingController();
+  final  _colorController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
-  String _endTime = "9:30 PM";
+  String _endTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
   String _selectedRepeat = "None";
+  var dbtitle = "";
+  var dbnote = "";
+  var dbstartTime = "";
+  var dbendTime = "";
   List<String> repeatList = [
     "None","Daily","Weekly","Monthly"
   ];
-  int _selectedColor = 0;
+  var _selectedColor = 0;
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _noteController.dispose();
+    _startTimeController.dispose();
+    _endTimeController.dispose();
+    super.dispose();
+  }
+
+  clearText(){
+    _titleController.clear();
+    _noteController.clear();
+    _startTimeController.clear();
+    _endTimeController.clear();
+  }
+  CollectionReference tasks = FirebaseFirestore.instance.collection('tasks');
+  Future<void>addUser(){
+    return tasks.add({'title':dbtitle,'note':dbnote,'startTime':dbstartTime,'endTime':dbendTime,'selectedColor':_selectedColor})
+    .then((value) => print("task added")).catchError((error)=>print('Failed to add task'));
+  }
+  updateUser(){
+    print("User update");
+  }
   @override
   Widget build(BuildContext context) {
     // Size size = MediaQuery.of(context).size;
@@ -100,6 +131,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                             padding: const EdgeInsets.only(left: 20,right: 20,top: 50),
                             child: Column(
                                 children: <Widget>[
+
                                   MyInputField(title: "Title", hint: "Enter your title",controller: _titleController),
                                   SizedBox(
                                     height: 8,
@@ -206,7 +238,6 @@ class _AddTaskPageState extends State<AddTaskPage> {
                                           ),
                                           onPressed: () {
                                             _validateDate();
-
                                           },
                                         ),
                                       ),
@@ -234,6 +265,14 @@ class _AddTaskPageState extends State<AddTaskPage> {
     if(_titleController.text.isNotEmpty&&_noteController.text.isNotEmpty){
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text("You have successfullly filled task details")));
+      setState(() {
+        dbtitle = _titleController.text;
+        dbnote = _noteController.text;
+        dbstartTime = _startTime.characters.toString();
+        dbendTime = _endTime.characters.toString();
+        addUser();
+        clearText();
+      });
 
       Navigator.push(context,
         MaterialPageRoute(builder: (context){
@@ -262,7 +301,6 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   onTap: (){
                     setState(() {
                       _selectedColor = index;
-
                     });
                   },
                   child: Padding(

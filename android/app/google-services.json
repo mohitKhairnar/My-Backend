@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "682814739647",
+    "project_id": "personal-tracker-b7909",
+    "storage_bucket": "personal-tracker-b7909.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:682814739647:android:907c0d4812531afa6c220a",
+        "android_client_info": {
+          "package_name": "com.example.mini_project_ui"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "682814739647-l7qbmeirq6nej037j6i193a18l72fi88.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mini_project_ui",
+            "certificate_hash": "6dee31c6b8cccc54ce52ea11bb951d2498daf838"
+          }
+        },
+        {
+          "client_id": "682814739647-m9e16mu8ts0j6gf1ijenj12ad9847c44.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZ8whG7yXzavjrmFIBSdB2Gi5o-zwrq3M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "682814739647-m9e16mu8ts0j6gf1ijenj12ad9847c44.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

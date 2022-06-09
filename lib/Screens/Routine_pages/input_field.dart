@@ -65,6 +65,12 @@ class MyInputField extends StatelessWidget {
                     autofocus: false,
                     cursorColor: Colors.grey[600],
                     controller: controller,
+                    validator: (value){
+                      if(value==null || value.isEmpty){
+                        return "Please enter";
+                      }
+                      return null;
+                    },
                     style: subTitleStyle,
                     decoration: InputDecoration(
                       hintText: hint,
