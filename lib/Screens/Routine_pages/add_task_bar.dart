@@ -25,6 +25,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   String _endTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
   String _selectedRepeat = "None";
+  int dbcheckIconColor = 0;
   var dbtitle = "";
   var dbnote = "";
   var dbstartTime = "";
@@ -51,7 +52,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   }
   CollectionReference tasks = FirebaseFirestore.instance.collection('tasks');
   Future<void>addUser(){
-    return tasks.add({'title':dbtitle,'note':dbnote,'startTime':dbstartTime,'endTime':dbendTime,'selectedColor':_selectedColor})
+    return tasks.add({'title':dbtitle,'note':dbnote,'startTime':dbstartTime,'endTime':dbendTime,'selectedColor':_selectedColor,'checkIconColor':dbcheckIconColor})
     .then((value) => print("task added")).catchError((error)=>print('Failed to add task'));
   }
   updateUser(){
@@ -270,6 +271,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
         dbnote = _noteController.text;
         dbstartTime = _startTime.characters.toString();
         dbendTime = _endTime.characters.toString();
+        dbcheckIconColor = 0;
         addUser();
         clearText();
       });

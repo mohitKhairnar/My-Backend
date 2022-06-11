@@ -31,7 +31,7 @@ dependencies:
   intl:
   google_fonts:
   date_picker_timeline:
-
+  icon_decoration: any
 
 
   # The following adds the Cupertino Icons font to your application.

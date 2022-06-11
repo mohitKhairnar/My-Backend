@@ -133,7 +133,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:mini_project_ui/Screens/upgradedr1.dart';
-
+import 'package:icon_decoration/icon_decoration.dart';
 import 'Routine_pages/add_task_bar.dart';
 import 'Routine_pages/list_item.dart';
 import 'Routine_pages/list_item_widget.dart';
@@ -181,14 +181,28 @@ class _RoutinePageState extends State<RoutinePage> {
   int navigationIndex = 0;
   bool valueOfCheckBox = false;
   bool checkedValue = false;
-
+  int undoIndex = 0;
+  int undoColor = 0;
+  String undoTitle = "";
+  String undoNote = "";
+  String undoStartTime = "";
+  String undoEndTime = "";
+  Color _iconColor = Colors.white;
   @override
   void initState() {
     super.initState();
   }
   CollectionReference tasks  = FirebaseFirestore.instance.collection('tasks');
   Future<void>deleteTask(id){
+
     return tasks.doc(id).delete().then((value)=>print('User deleted')).catchError((error)=>print('Faield to delete user: $error'));;
+  }
+  Future<void>undoTask(id)async {
+    return tasks.add({'title':undoTitle,'note':undoNote,'startTime':undoStartTime,'endTime':undoEndTime,'selectedColor':undoColor})
+        .then((value) => print("task added")).catchError((error)=>print('Failed to add task'));
+  }
+  Future<void>changeColor(int colorValue)async {
+
   }
   @override
   Widget build(BuildContext context) {
@@ -260,20 +274,20 @@ class _RoutinePageState extends State<RoutinePage> {
                                   ),
                                   Text("Today",
                                     style: headingStyle,),
+
                                 ],
                               ),
                             ),
                             SizedBox(
                               width: 150,
                               height: 50,
-
                               child: ElevatedButton(
+
                                 child: const Text('+Add Task',
                                   style: TextStyle(
                                     color: Colors.black,
                                   ),),
                                 style: ButtonStyle(
-
                                     backgroundColor: MaterialStateProperty.all(
                                         Color(0xFF7A9BEE)),
                                     shape: MaterialStateProperty.all<
@@ -281,10 +295,12 @@ class _RoutinePageState extends State<RoutinePage> {
                                         RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
                                               30.0),
-                                        )
-                                    )
+                                        ),
+                                    ),
+
                                 ),
                                 onPressed: () {
+
                                   Navigator.push(context,
                                     MaterialPageRoute(builder: (
                                         context) => const AddTaskPage()),);
@@ -294,13 +310,15 @@ class _RoutinePageState extends State<RoutinePage> {
                           ],
                         ),
                       ),
+
                     ),
                     Positioned(
-                      bottom: 0,
+                      top: 111,
+                      bottom: 30,
                       left: 0,
                       right: 0,
-                      child: Container(
 
+                      child: Container(
                         margin: EdgeInsets.symmetric(horizontal: 15),
                         height: 110,
                         decoration: BoxDecoration(
@@ -361,9 +379,6 @@ class _RoutinePageState extends State<RoutinePage> {
 
                 ),
 
-              ),
-              SizedBox(
-                height: 10,
               ),
              for(var i = 0;i<storedocs.length;i++)...[
              Container(
@@ -454,13 +469,42 @@ class _RoutinePageState extends State<RoutinePage> {
                        margin: EdgeInsets.all(20),
                        child: Column(
                          children: [
+
                            IconButton(
                              icon: Icon(Icons.check_box,
-                               color: Colors.white,
+                               color: storedocs[i]['checkIconColor']==0?Colors.white:Colors.green,
                                size: 40,
                              ),
-                             onPressed: (){
 
+                             onPressed: (){
+                               if(storedocs[i]['checkIconColor']==0){
+                                 setState(() {
+                                   tasks.doc(storedocs[i]['id'])
+                                       .update({
+                                     "checkIconColor":"1"
+                                   }).then((result){
+                                     print("new USer true");
+                                   }).catchError((onError){
+                                     print("onError");
+                                   });
+                                 });
+                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                     content: Text("Congrats you have completed your task...")));
+                               }
+                               else{
+                                 setState(() {
+                                   tasks.doc(storedocs[i]['id'])
+                                       .update({
+                                     "checkIconColor":"0"
+                                   }).then((result){
+                                     print("new USer true");
+                                   }).catchError((onError){
+                                     print("onError");
+                                   });
+                                 });
+                                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                     content: Text("Congrats you have completed your task...")));
+                               }
                              },
                            ),
                            SizedBox(
@@ -471,7 +515,43 @@ class _RoutinePageState extends State<RoutinePage> {
                                color: Colors.white,
                                size: 30,
                              ),
-                             onPressed: ()=>{deleteTask(storedocs[i]['id'])},
+                             onPressed: ()=>{
+                               undoTitle = storedocs[i]['title'],
+                               undoNote = storedocs[i]['note'],
+                               undoStartTime = storedocs[i]['startTime'],
+                               undoEndTime = storedocs[i]['endTime'],
+                               undoColor = storedocs[i]['selectedColor'],
+                               deleteTask(storedocs[i]['id']),
+                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                             content: Container(
+                               height: 100,
+                               child: Column(
+                                 children: [
+                                   Text("You have successfully deleted the task...",
+                                   style: TextStyle(
+                                     color: Colors.white,
+                                     fontSize: 20
+                                   ),),
+                                   Row(
+                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                     children: [
+                                       Text("Want to undo the task",style: TextStyle(
+                                           color: Colors.white,
+                                           fontSize: 20
+                                       ),),
+                                       IconButton(
+                                         icon: Icon(Icons.undo,
+                                           color: Colors.white,
+                                           size: 20,
+                                         ),
+                                         onPressed: ()=>{undoTask(storedocs[i]['id'])}),
+                                     ],
+                                   )
+
+
+                                 ],
+                               ),
+                             )))},
                            ),
 
                          ],
